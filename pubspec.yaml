@@ -1,11 +1,17 @@
 name: limited_wrap
-description: "A new Flutter package project."
-version: 0.0.1
-homepage:
+
+description: "library contains widget that extends the standard `Wrap` functionality with line limiting capabilities and a customizable button."
+
+version: 1.0.0
+
+repository: https://github.com/red-collar-official/limited_wrap
+issue_tracker: https://github.com/red-collar-official/limited_wrap/issues
+documentation: https://github.com/red-collar-official/limited_wrap/blob/main/README.md
+
+topics: [wrap, ui] 
 
 environment:
-  sdk: ^3.9.2
-  flutter: ">=1.17.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:

@@ -161,7 +161,7 @@
       "name": "limited_wrap",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "3.9"
+      "languageVersion": "3.0"
     }
   ],
   "generator": "pub",

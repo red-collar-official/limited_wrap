@@ -59,7 +59,8 @@ void main() {
       expect(visibleItems, greaterThan(0));
     });
 
-    testWidgets('chip-like items with icons and text', (WidgetTester tester) async {
+    testWidgets('chip-like items with icons and text',
+        (WidgetTester tester) async {
       Widget buildChip(String text) {
         return IntrinsicWidth(
           child: Container(
@@ -122,7 +123,8 @@ void main() {
       expect(find.byIcon(Icons.label), findsWidgets);
     });
 
-    testWidgets('variable length text items from 1 to 40 chars', (WidgetTester tester) async {
+    testWidgets('variable length text items from 1 to 40 chars',
+        (WidgetTester tester) async {
       final items = <Widget>[];
 
       // Generate items with text from 1 to 40 characters (step 5)
@@ -142,7 +144,8 @@ void main() {
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle),
+                  decoration: const BoxDecoration(
+                      color: Colors.green, shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 8),
                 Text(text, style: const TextStyle(fontSize: 12)),
@@ -243,7 +246,8 @@ void main() {
       expect(find.text('Item 5'), findsOneWidget);
     });
 
-    testWidgets('respects clipBehavior when content overflows', (WidgetTester tester) async {
+    testWidgets('respects clipBehavior when content overflows',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -276,7 +280,8 @@ void main() {
       expect(find.byType(UILimitedWrap), findsOneWidget);
     });
 
-    testWidgets('works with different sized containers', (WidgetTester tester) async {
+    testWidgets('works with different sized containers',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -365,16 +370,19 @@ void main() {
                 runSpacing: 8,
                 maxLines: 3,
                 showAllButton: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text('Show All Tags', style: TextStyle(color: Colors.white)),
+                  child: const Text('Show All Tags',
+                      style: TextStyle(color: Colors.white)),
                 ),
                 children: tags.map((tag) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(16),
@@ -431,7 +439,8 @@ void main() {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('More Filters', style: TextStyle(color: Colors.blue)),
+                      Text('More Filters',
+                          style: TextStyle(color: Colors.blue)),
                       SizedBox(width: 4),
                       Icon(Icons.arrow_drop_down, color: Colors.blue),
                     ],
@@ -439,7 +448,8 @@ void main() {
                 ),
                 children: filters.map((filter) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: Colors.blue[50],
                       border: Border.all(color: Colors.blue[200]!),

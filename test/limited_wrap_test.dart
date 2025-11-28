@@ -36,7 +36,8 @@ void main() {
       expect(find.text('Child 1'), findsOneWidget);
     });
 
-    testWidgets('renders multiple children in one row', (WidgetTester tester) async {
+    testWidgets('renders multiple children in one row',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -63,7 +64,8 @@ void main() {
   });
 
   group('LimitedRenderWrap - MaxLines Tests', () {
-    testWidgets('hides show all button when content fits', (WidgetTester tester) async {
+    testWidgets('hides show all button when content fits',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -92,7 +94,8 @@ void main() {
       expect(renderBox.size.height, equals(0));
     });
 
-    testWidgets('shows all button when content exceeds maxLines', (WidgetTester tester) async {
+    testWidgets('shows all button when content exceeds maxLines',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -166,7 +169,7 @@ void main() {
         final itemFinder = find.text('Item $i');
         if (itemFinder.evaluate().isNotEmpty) {
           final renderBox = tester.renderObject<RenderBox>(itemFinder);
-          
+
           // Items in first 2 rows should be visible
           // Items in rows > 2 should be hidden (except show all button)
           if (i < 4) {
@@ -210,7 +213,8 @@ void main() {
       expect(bBox.dx, equals(aBox.dx + 50 + spacing));
     });
 
-    testWidgets('respects vertical spacing (runSpacing)', (WidgetTester tester) async {
+    testWidgets('respects vertical spacing (runSpacing)',
+        (WidgetTester tester) async {
       const runSpacing = 12.0;
 
       await tester.pumpWidget(
@@ -243,7 +247,8 @@ void main() {
   });
 
   group('LimitedRenderWrap - Wrapping Tests', () {
-    testWidgets('wraps to new line when width exceeded', (WidgetTester tester) async {
+    testWidgets('wraps to new line when width exceeded',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -361,7 +366,8 @@ void main() {
       expect(bBox.dx, equals(aBox.dx + 50));
     });
 
-    testWidgets('handles null maxLines (unlimited)', (WidgetTester tester) async {
+    testWidgets('handles null maxLines (unlimited)',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -462,7 +468,7 @@ void main() {
 
       // Count visible items with maxLines = 3
       int visibleAfter = 0;
-      
+
       for (int i = 0; i < 10; i++) {
         final itemFinder = find.text('Item $i');
         if (itemFinder.evaluate().isNotEmpty) {
@@ -586,7 +592,8 @@ void main() {
       expect(distance2, greaterThan(distance1));
     });
 
-    testWidgets('updates when clipBehavior changes', (WidgetTester tester) async {
+    testWidgets('updates when clipBehavior changes',
+        (WidgetTester tester) async {
       Clip clipBehavior = Clip.none;
 
       await tester.pumpWidget(
@@ -644,7 +651,7 @@ void main() {
   });
 
   group('LimitedRenderWrap - Intrinsic Size Tests', () {
-    testWidgets('computeMinIntrinsicWidth returns widest child', 
+    testWidgets('computeMinIntrinsicWidth returns widest child',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -654,7 +661,8 @@ void main() {
                 showAllButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('Short')),
-                  SizedBox(width: 120, height: 30, child: Text('Very Wide Item')),
+                  SizedBox(
+                      width: 120, height: 30, child: Text('Very Wide Item')),
                   SizedBox(width: 70, height: 30, child: Text('Medium')),
                 ],
               ),
@@ -667,12 +675,12 @@ void main() {
 
       final wrapFinder = find.byType(UILimitedWrap);
       final renderBox = tester.renderObject<RenderBox>(wrapFinder);
-      
+
       // The min intrinsic width should accommodate at least the widest child
       expect(renderBox.size.width, greaterThanOrEqualTo(120));
     });
 
-    testWidgets('computeMaxIntrinsicWidth returns sum of all children', 
+    testWidgets('computeMaxIntrinsicWidth returns sum of all children',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -681,7 +689,8 @@ void main() {
               stepWidth: double.infinity,
               child: UILimitedWrap(
                 spacing: 0,
-                showAllButton: const SizedBox(width: 0, child: Text('Show All')),
+                showAllButton:
+                    const SizedBox(width: 0, child: Text('Show All')),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('A')),
                   SizedBox(width: 80, height: 30, child: Text('B')),
@@ -699,7 +708,7 @@ void main() {
       expect(find.byType(UILimitedWrap), findsOneWidget);
     });
 
-    testWidgets('computeMinIntrinsicHeight calculates correct height', 
+    testWidgets('computeMinIntrinsicHeight calculates correct height',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -727,12 +736,12 @@ void main() {
 
       final wrapFinder = find.byType(UILimitedWrap);
       final renderBox = tester.renderObject<RenderBox>(wrapFinder);
-      
+
       // Height should be calculated correctly
       expect(renderBox.size.height, greaterThan(0));
     });
 
-    testWidgets('computeMaxIntrinsicHeight matches min intrinsic height', 
+    testWidgets('computeMaxIntrinsicHeight matches min intrinsic height',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -754,12 +763,12 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      
+
       // Widget should render successfully
       expect(find.byType(UILimitedWrap), findsOneWidget);
     });
 
-    testWidgets('computeDistanceToActualBaseline works with text', 
+    testWidgets('computeDistanceToActualBaseline works with text',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -783,7 +792,7 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      
+
       // Should render without errors when baseline is needed
       expect(find.byType(UILimitedWrap), findsOneWidget);
       expect(find.text('Baseline'), findsOneWidget);
@@ -813,7 +822,7 @@ void main() {
 
       final wrapFinder = find.byType(UILimitedWrap);
       expect(wrapFinder, findsOneWidget);
-      
+
       final renderBox = tester.renderObject<RenderBox>(wrapFinder);
       // With no children, size should be minimal
       expect(renderBox.size.width, lessThanOrEqualTo(200));
@@ -840,7 +849,7 @@ void main() {
   });
 
   group('LimitedRenderWrap - Dry Layout Tests', () {
-    testWidgets('dry layout matches actual layout size', 
+    testWidgets('dry layout matches actual layout size',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -869,11 +878,11 @@ void main() {
 
       final wrapFinder = find.byType(UILimitedWrap);
       final renderBox = tester.renderObject<RenderBox>(wrapFinder);
-      
+
       // Verify that widget has calculated size correctly
       expect(renderBox.size.width, greaterThan(0));
       expect(renderBox.size.height, greaterThan(0));
-      
+
       // Size should be constrained by parent
       expect(renderBox.size.width, lessThanOrEqualTo(300));
     });

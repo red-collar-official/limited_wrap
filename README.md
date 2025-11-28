@@ -77,7 +77,7 @@ class _LimitedWrapExampleWidgetState extends State<LimitedWrapExampleWidget> {
 
 ## Parameters
 
-1. **children** (List<Widget>, required) — list of widgets to display in the wrap
+1. **children** (List of Widgets, required) — list of widgets to display in the wrap
 2. **showAllButton** (Widget, required) — widget displayed when content exceeds maxLines
 3. **spacing** (double, default 0.0) — horizontal spacing between children
 4. **runSpacing** (double, default 0.0) — vertical spacing between rows

@@ -15,40 +15,42 @@ class _LimitedWrapExampleWidgetState extends State<LimitedWrapExampleWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return UILimitedWrap(
-      spacing: 8.0,
-      runSpacing: 8.0,
-      maxLines: _expanded ? 4 : 2,
-      clipBehavior: Clip.hardEdge,
-      showAllButton: InkWell(
-        onTap: () {
-          setState(() {
-            _expanded = !_expanded;
-          });
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                _expanded ? 'Show Less' : 'Show All',
-                style: const TextStyle(color: Colors.white),
-              ),
-              Icon(
-                _expanded ? Icons.expand_less : Icons.expand_more,
-                color: Colors.white,
-                size: 20,
-              ),
-            ],
+    return SingleChildScrollView(
+      child: UILimitedWrap(
+        spacing: 8.0,
+        runSpacing: 8.0,
+        maxLines: _expanded ? null : 2,
+        clipBehavior: Clip.hardEdge,
+        changeExpansionButton: InkWell(
+          onTap: () {
+            setState(() {
+              _expanded = !_expanded;
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _expanded ? 'Show Less' : 'Show All',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                Icon(
+                  _expanded ? Icons.expand_less : Icons.expand_more,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ],
+            ),
           ),
         ),
+        children: _buildTags(),
       ),
-      children: _buildTags(),
     );
   }
 

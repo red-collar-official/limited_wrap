@@ -7,6 +7,7 @@ A Flutter widget that extends the standard `Wrap` functionality with line limiti
 ## Preview
 
 ![alt text](limited_wrap_example.gif)
+
 ## Usage
 
 ### Basic Example
@@ -27,9 +28,9 @@ class _LimitedWrapExampleWidgetState extends State<LimitedWrapExampleWidget> {
     return UILimitedWrap(
       spacing: 8.0,
       runSpacing: 8.0,
-      maxLines: _expanded ? 4 : 2, 
+      maxLines: _expanded ? 4 : 2,
       clipBehavior: Clip.hardEdge,
-      showAllButton: InkWell(
+      changeExpansionButton: InkWell(
         onTap: () {
           setState(() {
             _expanded = !_expanded;
@@ -78,8 +79,9 @@ class _LimitedWrapExampleWidgetState extends State<LimitedWrapExampleWidget> {
 ## Parameters
 
 1. **children** (List of Widgets, required) — list of widgets to display in the wrap
-2. **showAllButton** (Widget, required) — widget displayed when content exceeds maxLines
+2. **changeExpansionButton** (Widget, required) — widget displayed when content exceeds maxLines
 3. **spacing** (double, default 0.0) — horizontal spacing between children
 4. **runSpacing** (double, default 0.0) — vertical spacing between rows
 5. **maxLines** (int?, default null) — maximum number of visible rows; null means unlimited
 6. **clipBehavior** (Clip, default Clip.none) — how to clip overflowing content
+7. **isLimited** (bool, default true) — When active, it shows the changeExpansionButton for a list with an unlimited number of lines (maxLines = null)

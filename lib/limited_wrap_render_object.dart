@@ -14,10 +14,18 @@ class LimitedRenderWrap extends RenderBox
     double runSpacing = 0.0,
     Clip clipBehavior = Clip.none,
     int? maxLines,
+    bool isLimited = true,
   })  : _spacing = spacing,
         _runSpacing = runSpacing,
         _maxLines = maxLines,
+        _isLimited = isLimited,
         _clipBehavior = clipBehavior {
+    // Validate: if maxLines is set, isLimited must be true
+    assert(
+      maxLines == null || isLimited,
+      'When maxLines is set, isLimited must be true. '
+      'Use isLimited: false only with maxLines: null for unlimited mode without button.',
+    );
     addAll(children);
   }
 
@@ -31,7 +39,27 @@ class LimitedRenderWrap extends RenderBox
   int? _maxLines;
   set maxLines(int? value) {
     if (_maxLines == value) return;
+    // Validate: if maxLines is being set, isLimited must be true
+    assert(
+      value == null || _isLimited,
+      'When maxLines is set, isLimited must be true. '
+      'Use isLimited: false only with maxLines: null.',
+    );
     _maxLines = value;
+    markNeedsLayout();
+  }
+
+  bool get isLimited => _isLimited;
+  bool _isLimited;
+  set isLimited(bool value) {
+    if (_isLimited == value) return;
+    // Validate: if setting to false, maxLines must be null
+    assert(
+      value == true || _maxLines == null,
+      'Cannot set isLimited to false when maxLines is set. '
+      'Set maxLines to null first.',
+    );
+    _isLimited = value;
     markNeedsLayout();
   }
 
@@ -125,22 +153,23 @@ class LimitedRenderWrap extends RenderBox
 
     RenderBox? child = firstChild;
     while (child != null) {
+      if (maxLines == null && isLimited && child == lastChild && state.childCount > 0) {
+        _finalizeCurrentRun(state);
+      }
+
       final childSize = layoutChild(child, childConstraints);
       _processChildInDryLayout(childSize, state, mainAxisLimit);
       child = childAfter(child);
     }
 
     state.crossAxisExtent += state.runCrossAxisExtent;
-    state.mainAxisExtent =
-        math.max(state.mainAxisExtent, state.runMainAxisExtent);
+    state.mainAxisExtent = math.max(state.mainAxisExtent, state.runMainAxisExtent);
 
-    return constraints
-        .constrain(Size(state.mainAxisExtent, state.crossAxisExtent));
+    return constraints.constrain(Size(state.mainAxisExtent, state.crossAxisExtent));
   }
 
   /// Processes a single child during dry layout, updating run metrics.
-  void _processChildInDryLayout(
-      Size childSize, LayoutState state, double mainAxisLimit) {
+  void _processChildInDryLayout(Size childSize, LayoutState state, double mainAxisLimit) {
     final childMainAxisExtent = childSize.width;
     final childCrossAxisExtent = childSize.height;
 
@@ -154,8 +183,7 @@ class LimitedRenderWrap extends RenderBox
     }
 
     state.runMainAxisExtent += childMainAxisExtent;
-    state.runCrossAxisExtent =
-        math.max(state.runCrossAxisExtent, childCrossAxisExtent);
+    state.runCrossAxisExtent = math.max(state.runCrossAxisExtent, childCrossAxisExtent);
 
     if (state.childCount > 0) {
       state.runMainAxisExtent += spacing;
@@ -171,14 +199,12 @@ class LimitedRenderWrap extends RenderBox
     double childMainAxisExtent,
     double mainAxisLimit,
   ) {
-    return childCount > 0 &&
-        runMainAxisExtent + spacing + childMainAxisExtent > mainAxisLimit;
+    return childCount > 0 && runMainAxisExtent + spacing + childMainAxisExtent > mainAxisLimit;
   }
 
   /// Finalizes the current run by updating total extents and resetting run state.
   void _finalizeCurrentRun(LayoutState state) {
-    state.mainAxisExtent =
-        math.max(state.mainAxisExtent, state.runMainAxisExtent);
+    state.mainAxisExtent = math.max(state.mainAxisExtent, state.runMainAxisExtent);
     state.crossAxisExtent += state.runCrossAxisExtent + runSpacing;
     state.runMainAxisExtent = 0.0;
     state.runCrossAxisExtent = 0.0;
@@ -213,14 +239,14 @@ class LimitedRenderWrap extends RenderBox
     LayoutState state,
   ) {
     if (maxLines == null) {
-      _layoutWithoutMaxLines(
-          childConstraints, mainAxisLimit, runMetrics, state);
+      _layoutWithoutMaxLines(childConstraints, mainAxisLimit, runMetrics, state);
     } else {
       _layoutWithMaxLines(childConstraints, mainAxisLimit, runMetrics, state);
     }
   }
 
-  /// Layouts all children without line restrictions, hiding only the show-all button.
+  /// Layouts all children without line restrictions.
+  /// Button visibility depends on isLimited flag.
   void _layoutWithoutMaxLines(
     BoxConstraints childConstraints,
     double mainAxisLimit,
@@ -231,17 +257,21 @@ class LimitedRenderWrap extends RenderBox
 
     while (child != null) {
       final childParentData = child.parentData! as WrapParentData;
-      final isShowAllButton = child == lastChild;
+      final isButton = child == lastChild;
 
-      if (isShowAllButton) {
+      // Hide button if isLimited = false, show if isLimited = true
+      if (isButton && !isLimited) {
         _hideChild(child, childParentData, runMetrics);
         child = childParentData.nextSibling;
         continue;
       }
 
+      if (isButton && state.childCount > 0) {
+        _addRunMetrics(runMetrics, state);
+      }
+
       child.layout(childConstraints, parentUsesSize: true);
-      _processVisibleChild(
-          child, childParentData, mainAxisLimit, runMetrics, state);
+      _processVisibleChild(child, childParentData, mainAxisLimit, runMetrics, state);
       child = childParentData.nextSibling;
     }
 
@@ -251,8 +281,7 @@ class LimitedRenderWrap extends RenderBox
   }
 
   /// Hides a child by applying zero constraints and assigning run index.
-  void _hideChild(
-      RenderBox child, WrapParentData parentData, List<RunMetrics> runMetrics) {
+  void _hideChild(RenderBox child, WrapParentData parentData, List<RunMetrics> runMetrics) {
     child.layout(BoxConstraints.tight(Size.zero), parentUsesSize: true);
     parentData.runIndex = runMetrics.length;
   }
@@ -281,16 +310,15 @@ class LimitedRenderWrap extends RenderBox
     parentData.runIndex = runMetrics.length;
   }
 
-  /// Layouts children with line restrictions, showing show-all button when content exceeds maxLines.
+  /// Layouts children with line restrictions, showing button when content exceeds maxLines.
   void _layoutWithMaxLines(
     BoxConstraints childConstraints,
     double mainAxisLimit,
     List<RunMetrics> runMetrics,
     LayoutState state,
   ) {
-    final rowAssignments =
-        _calculateRowAssignments(childConstraints, mainAxisLimit);
-    final needsShowAll = _determineIfShowAllNeeded(rowAssignments);
+    final rowAssignments = _calculateRowAssignments(childConstraints, mainAxisLimit);
+    final needsButton = _determineIfButtonNeeded(rowAssignments);
 
     _layoutChildrenWithRowRestrictions(
       childConstraints,
@@ -298,7 +326,7 @@ class LimitedRenderWrap extends RenderBox
       runMetrics,
       state,
       rowAssignments,
-      needsShowAll,
+      needsButton,
     );
 
     if (state.childCount > 0) {
@@ -306,11 +334,11 @@ class LimitedRenderWrap extends RenderBox
     }
   }
 
-  /// Determines if show-all button should be visible based on content rows.
-  bool _determineIfShowAllNeeded(Map<RenderBox, int> rowAssignments) {
-    final showAllButton = lastChild;
+  /// Determines if button should be visible based on content rows.
+  bool _determineIfButtonNeeded(Map<RenderBox, int> rowAssignments) {
+    final button = lastChild;
     final maxRowInContent = rowAssignments.entries
-        .where((e) => e.key != showAllButton)
+        .where((e) => e.key != button)
         .map((e) => e.value)
         .fold<int>(0, (max, row) => math.max(max, row));
 
@@ -324,18 +352,17 @@ class LimitedRenderWrap extends RenderBox
     List<RunMetrics> runMetrics,
     LayoutState state,
     Map<RenderBox, int> rowAssignments,
-    bool needsShowAll,
+    bool needsButton,
   ) {
     RenderBox? child = firstChild;
-    final showAllButton = lastChild;
+    final button = lastChild;
 
     while (child != null) {
       final childParentData = child.parentData! as WrapParentData;
-      final isShowAllButton = child == showAllButton;
+      final isButton = child == button;
       final childRow = rowAssignments[child] ?? 0;
 
-      final shouldHide =
-          _shouldHideChildInMaxLines(isShowAllButton, childRow, needsShowAll);
+      final shouldHide = _shouldHideChildInMaxLines(isButton, childRow, needsButton);
 
       if (shouldHide) {
         _hideChild(child, childParentData, runMetrics);
@@ -344,17 +371,15 @@ class LimitedRenderWrap extends RenderBox
       }
 
       child.layout(childConstraints, parentUsesSize: true);
-      _processVisibleChild(
-          child, childParentData, mainAxisLimit, runMetrics, state);
+      _processVisibleChild(child, childParentData, mainAxisLimit, runMetrics, state);
       child = childParentData.nextSibling;
     }
   }
 
-  /// Determines if a child should be hidden based on its row and show-all state.
-  bool _shouldHideChildInMaxLines(
-      bool isShowAllButton, int childRow, bool needsShowAll) {
-    if (isShowAllButton) {
-      return !needsShowAll;
+  /// Determines if a child should be hidden based on its row and button state.
+  bool _shouldHideChildInMaxLines(bool isButton, int childRow, bool needsButton) {
+    if (isButton) {
+      return !needsButton;
     }
     return childRow >= maxLines!;
   }
@@ -375,8 +400,7 @@ class LimitedRenderWrap extends RenderBox
 
       final childWidth = child.size.width;
       final needsSpacing = currentRowWidth > 0;
-      final totalWidth =
-          currentRowWidth + (needsSpacing ? spacing : 0) + childWidth;
+      final totalWidth = currentRowWidth + (needsSpacing ? spacing : 0) + childWidth;
 
       if (totalWidth > mainAxisLimit && currentRowWidth > 0) {
         currentRow++;
@@ -394,16 +418,14 @@ class LimitedRenderWrap extends RenderBox
 
   /// Adds current run metrics to the list and resets state for next run.
   void _addRunMetrics(List<RunMetrics> runMetrics, LayoutState state) {
-    state.mainAxisExtent =
-        math.max(state.mainAxisExtent, state.runMainAxisExtent);
+    state.mainAxisExtent = math.max(state.mainAxisExtent, state.runMainAxisExtent);
     state.crossAxisExtent += state.runCrossAxisExtent;
 
     if (runMetrics.isNotEmpty) {
       state.crossAxisExtent += runSpacing;
     }
 
-    runMetrics.add(RunMetrics(
-        state.runMainAxisExtent, state.runCrossAxisExtent, state.childCount));
+    runMetrics.add(RunMetrics(state.runMainAxisExtent, state.runCrossAxisExtent, state.childCount));
     state.runMainAxisExtent = 0.0;
     state.runCrossAxisExtent = 0.0;
     state.childCount = 0;
@@ -421,8 +443,7 @@ class LimitedRenderWrap extends RenderBox
     }
 
     state.runMainAxisExtent += childMainAxisExtent;
-    state.runCrossAxisExtent =
-        math.max(state.runCrossAxisExtent, childCrossAxisExtent);
+    state.runCrossAxisExtent = math.max(state.runCrossAxisExtent, childCrossAxisExtent);
     state.childCount += 1;
   }
 
@@ -432,25 +453,20 @@ class LimitedRenderWrap extends RenderBox
     LayoutState state,
     bool isNeedToHideElements,
   ) {
-    state.mainAxisExtent =
-        math.max(state.mainAxisExtent, state.runMainAxisExtent);
+    state.mainAxisExtent = math.max(state.mainAxisExtent, state.runMainAxisExtent);
     state.crossAxisExtent += state.runCrossAxisExtent;
 
     if (runMetrics.isNotEmpty) {
       state.crossAxisExtent += runSpacing;
     }
 
-    runMetrics.add(RunMetrics(
-        state.runMainAxisExtent, state.runCrossAxisExtent, state.childCount));
+    runMetrics.add(RunMetrics(state.runMainAxisExtent, state.runCrossAxisExtent, state.childCount));
   }
 
   /// Finalizes layout by setting final size and checking for overflow.
-  void _finalizeLayout(BoxConstraints constraints, List<RunMetrics> runMetrics,
-      LayoutState state) {
-    size = constraints
-        .constrain(Size(state.mainAxisExtent, state.crossAxisExtent));
-    _hasVisualOverflow = size.width < state.mainAxisExtent ||
-        size.height < state.crossAxisExtent;
+  void _finalizeLayout(BoxConstraints constraints, List<RunMetrics> runMetrics, LayoutState state) {
+    size = constraints.constrain(Size(state.mainAxisExtent, state.crossAxisExtent));
+    _hasVisualOverflow = size.width < state.mainAxisExtent || size.height < state.crossAxisExtent;
   }
 
   /// Positions all children based on calculated run metrics.
@@ -527,6 +543,7 @@ class LimitedRenderWrap extends RenderBox
     properties
       ..add(DoubleProperty('spacing', spacing))
       ..add(DoubleProperty('runSpacing', runSpacing))
-      ..add(IntProperty('maxLines', maxLines));
+      ..add(IntProperty('maxLines', maxLines))
+      ..add(DiagnosticsProperty<bool>('isLimited', isLimited));
   }
 }

@@ -2,7 +2,7 @@ name: limited_wrap
 
 description: "library contains widget that extends the standard `Wrap` functionality with line limiting capabilities and a customizable button."
 
-version: 1.0.1
+version: 1.0.2
 
 repository: https://github.com/red-collar-official/limited_wrap
 issue_tracker: https://github.com/red-collar-official/limited_wrap/issues

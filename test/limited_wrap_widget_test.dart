@@ -16,7 +16,7 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 maxLines: 2,
-                showAllButton: Container(
+                changeExpansionButton: Container(
                   padding: const EdgeInsets.all(8),
                   color: Colors.blue,
                   child: const Text('Show All'),
@@ -97,7 +97,7 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 maxLines: 2,
-                showAllButton: buildChip('Show All'),
+                changeExpansionButton: buildChip('Show All'),
                 children: [
                   buildChip('Flutter'),
                   buildChip('Dart'),
@@ -164,7 +164,7 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 maxLines: 3,
-                showAllButton: Container(
+                changeExpansionButton: Container(
                   padding: const EdgeInsets.all(8),
                   color: Colors.orange,
                   child: const Text('More...'),
@@ -209,7 +209,7 @@ void main() {
                         spacing: 8,
                         runSpacing: 8,
                         maxLines: 2,
-                        showAllButton: const Text('Show All'),
+                        changeExpansionButton: const Text('Show All'),
                         children: items
                             .map(
                               (item) => Container(
@@ -258,7 +258,7 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 clipBehavior: Clip.hardEdge,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: List.generate(
                   50,
                   (index) => Container(
@@ -291,7 +291,7 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 maxLines: 2,
-                showAllButton: Container(
+                changeExpansionButton: Container(
                   padding: const EdgeInsets.all(8),
                   color: Colors.red,
                   child: const Text('More'),
@@ -369,7 +369,7 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 maxLines: 3,
-                showAllButton: Container(
+                changeExpansionButton: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
@@ -430,7 +430,7 @@ void main() {
                 spacing: 12,
                 runSpacing: 12,
                 maxLines: 2,
-                showAllButton: Container(
+                changeExpansionButton: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.blue),

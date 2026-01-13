@@ -4,17 +4,24 @@ import 'package:limited_wrap/limited_wrap_render_object.dart';
 
 /// Wrap widget with line limiting and expandable content support
 ///
-/// Improves standard Wrap with maxLines constraint and smart "Show All" button
-/// that automatically appears when content exceeds the visible area
+/// Improves standard Wrap with maxLines constraint and smart button
+/// that manages content expansion based on overflow
+///
+/// Button visibility logic:
+/// - maxLines = null, isLimited = true: button always visible
+/// - maxLines = null, isLimited = false: button always hidden
+/// - maxLines set, isLimited = true: button shown only if content overflows
+/// - maxLines set, isLimited = false: throws assertion error
 ///
 /// ```dart
 /// UILimitedWrap(
 ///   spacing: 8.0,
 ///   runSpacing: 8.0,
 ///   maxLines: 2,
-///   showAllButton: TextButton(
+///   isLimited: true,
+///   changeExpansionButton: TextButton(
 ///     onPressed: () {
-///       // Handle show all action
+///       // Handle expansion action
 ///     },
 ///     child: Text('Show All'),
 ///   ),
@@ -34,10 +41,16 @@ class UILimitedWrap extends MultiChildRenderObjectWidget {
     this.spacing = 0.0,
     this.runSpacing = 0.0,
     this.clipBehavior = Clip.none,
-    List<Widget> children = const <Widget>[],
     this.maxLines,
-    required this.showAllButton,
-  }) : super(children: [...children, showAllButton]);
+    this.isLimited = true,
+    required this.changeExpansionButton,
+    List<Widget> children = const <Widget>[],
+  })  : assert(
+          maxLines == null || isLimited,
+          'When maxLines is set, isLimited must be true. '
+          'Use isLimited: false only with maxLines: null for unlimited mode without button.',
+        ),
+        super(children: [...children, changeExpansionButton]);
 
   /// Horizontal space between children
   final double spacing;
@@ -52,22 +65,37 @@ class UILimitedWrap extends MultiChildRenderObjectWidget {
 
   /// Maximum visible rows before truncation
   ///
-  /// When exceeded, showAllButton appears on next row
-  /// Null means show all content
+  /// When exceeded and isLimited = true, changeExpansionButton appears on next row
+  /// When null, behavior depends on isLimited:
+  /// - isLimited = true: all content visible, button always shown
+  /// - isLimited = false: all content visible, button hidden
   final int? maxLines;
 
-  /// Widget shown when content exceeds maxLines
+  /// Whether the wrap is in limited mode (manages button visibility)
   ///
-  /// Typically a button that expands content
-  /// Automatically hidden when all content fits
+  /// - true: Button visibility depends on maxLines and content overflow
+  /// - false: Button is always hidden (only valid when maxLines = null)
+  ///
+  /// When maxLines is set, this must be true (enforced by assertion)
+  final bool isLimited;
+
+  /// Widget shown to change expansion state
+  ///
+  /// Visibility is automatically managed based on maxLines, isLimited, and content overflow:
+  /// - maxLines = null, isLimited = true: always visible
+  /// - maxLines = null, isLimited = false: always hidden
+  /// - maxLines set, content fits: hidden (size = 0)
+  /// - maxLines set, content overflows: visible on row maxLines + 1
+  ///
+  /// Typically contains a button like "Show All" or "Show Less"
   /// Example:
   /// ```dart
-  /// showAllButton: TextButton(
-  ///   onPressed: () => setState(() => _expanded = true),
-  ///   child: Text('Show All'),
+  /// changeExpansionButton: InkWell(
+  ///   onTap: () => setState(() => _expanded = !_expanded),
+  ///   child: Text(_expanded ? 'Show Less' : 'Show All'),
   /// )
   /// ```
-  final Widget showAllButton;
+  final Widget changeExpansionButton;
 
   @override
   LimitedRenderWrap createRenderObject(BuildContext context) {
@@ -76,6 +104,7 @@ class UILimitedWrap extends MultiChildRenderObjectWidget {
       runSpacing: runSpacing,
       clipBehavior: clipBehavior,
       maxLines: maxLines,
+      isLimited: isLimited,
     );
   }
 
@@ -88,6 +117,7 @@ class UILimitedWrap extends MultiChildRenderObjectWidget {
       ..spacing = spacing
       ..runSpacing = runSpacing
       ..maxLines = maxLines
+      ..isLimited = isLimited
       ..clipBehavior = clipBehavior;
   }
 
@@ -97,6 +127,7 @@ class UILimitedWrap extends MultiChildRenderObjectWidget {
     properties
       ..add(DoubleProperty('spacing', spacing))
       ..add(DoubleProperty('runSpacing', runSpacing))
-      ..add(IntProperty('maxLines', maxLines));
+      ..add(IntProperty('maxLines', maxLines))
+      ..add(DiagnosticsProperty<bool>('isLimited', isLimited));
   }
 }

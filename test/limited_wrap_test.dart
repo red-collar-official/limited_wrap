@@ -9,7 +9,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: UILimitedWrap(
-              showAllButton: const SizedBox(),
+              changeExpansionButton: const SizedBox(),
               children: const [],
             ),
           ),
@@ -24,7 +24,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: UILimitedWrap(
-              showAllButton: const Text('Show All'),
+              changeExpansionButton: const Text('Show All'),
               children: const [
                 Text('Child 1'),
               ],
@@ -45,7 +45,7 @@ void main() {
               width: 400,
               child: UILimitedWrap(
                 spacing: 8,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('A')),
                   SizedBox(width: 50, height: 30, child: Text('B')),
@@ -74,7 +74,7 @@ void main() {
               child: UILimitedWrap(
                 spacing: 8,
                 maxLines: 3,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('A')),
                   SizedBox(width: 50, height: 30, child: Text('B')),
@@ -88,8 +88,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Show All button should be hidden (zero size)
-      final showAllButton = find.text('Show All');
-      final renderBox = tester.renderObject<RenderBox>(showAllButton);
+      final changeExpansionButton = find.text('Show All');
+      final renderBox = tester.renderObject<RenderBox>(changeExpansionButton);
       expect(renderBox.size.width, equals(0));
       expect(renderBox.size.height, equals(0));
     });
@@ -105,7 +105,7 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 maxLines: 2,
-                showAllButton: const SizedBox(
+                changeExpansionButton: const SizedBox(
                   width: 100,
                   height: 30,
                   child: Text('Show All'),
@@ -127,8 +127,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Show All button should be visible
-      final showAllButton = find.text('Show All');
-      final renderBox = tester.renderObject<RenderBox>(showAllButton);
+      final changeExpansionButton = find.text('Show All');
+      final renderBox = tester.renderObject<RenderBox>(changeExpansionButton);
       expect(renderBox.size.width, greaterThan(0));
       expect(renderBox.size.height, greaterThan(0));
     });
@@ -143,7 +143,7 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 maxLines: 2,
-                showAllButton: const SizedBox(
+                changeExpansionButton: const SizedBox(
                   width: 80,
                   height: 30,
                   child: Text('Show All'),
@@ -193,7 +193,7 @@ void main() {
               width: 400,
               child: UILimitedWrap(
                 spacing: spacing,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('A')),
                   SizedBox(width: 50, height: 30, child: Text('B')),
@@ -225,7 +225,7 @@ void main() {
               child: UILimitedWrap(
                 spacing: 8,
                 runSpacing: runSpacing,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 80, height: 30, child: Text('Row 1')),
                   SizedBox(width: 80, height: 30, child: Text('Row 2')),
@@ -257,7 +257,7 @@ void main() {
               child: UILimitedWrap(
                 spacing: 8,
                 runSpacing: 8,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 60, height: 30, child: Text('Item 1')),
                   SizedBox(width: 60, height: 30, child: Text('Item 2')),
@@ -291,7 +291,7 @@ void main() {
               child: UILimitedWrap(
                 spacing: 8,
                 runSpacing: 8,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('Short')),
                   SizedBox(width: 50, height: 60, child: Text('Tall')),
@@ -323,7 +323,7 @@ void main() {
             body: SizedBox(
               width: 200,
               child: UILimitedWrap(
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 300, height: 30, child: Text('Very Wide')),
                 ],
@@ -346,7 +346,7 @@ void main() {
               child: UILimitedWrap(
                 spacing: 0,
                 runSpacing: 0,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('A')),
                   SizedBox(width: 50, height: 30, child: Text('B')),
@@ -377,7 +377,8 @@ void main() {
                 spacing: 8,
                 runSpacing: 8,
                 maxLines: null, // Unlimited
-                showAllButton: const Text('Show All'),
+                isLimited: false,
+                changeExpansionButton: const Text('Show All'),
                 children: List.generate(
                   20,
                   (index) => SizedBox(
@@ -395,8 +396,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Show All button should be hidden when maxLines is null
-      final showAllButton = find.text('Show All');
-      final renderBox = tester.renderObject<RenderBox>(showAllButton);
+      final changeExpansionButton = find.text('Show All');
+      final renderBox = tester.renderObject<RenderBox>(changeExpansionButton);
       expect(renderBox.size.width, equals(0));
     });
   });
@@ -426,7 +427,7 @@ void main() {
                         spacing: 8,
                         runSpacing: 8,
                         maxLines: maxLines,
-                        showAllButton: const SizedBox(
+                        changeExpansionButton: const SizedBox(
                           width: 80,
                           height: 30,
                           child: Text('Show All'),
@@ -503,7 +504,7 @@ void main() {
                       ),
                       UILimitedWrap(
                         spacing: spacing,
-                        showAllButton: const Text('Show All'),
+                        changeExpansionButton: const Text('Show All'),
                         children: const [
                           SizedBox(width: 50, height: 30, child: Text('A')),
                           SizedBox(width: 50, height: 30, child: Text('B')),
@@ -559,7 +560,7 @@ void main() {
                       UILimitedWrap(
                         spacing: 8,
                         runSpacing: runSpacing,
-                        showAllButton: const Text('Show All'),
+                        changeExpansionButton: const Text('Show All'),
                         children: const [
                           SizedBox(width: 80, height: 30, child: Text('Row 1')),
                           SizedBox(width: 80, height: 30, child: Text('Row 2')),
@@ -619,7 +620,7 @@ void main() {
                           spacing: 8,
                           runSpacing: 8,
                           clipBehavior: clipBehavior,
-                          showAllButton: const Text('Show All'),
+                          changeExpansionButton: const Text('Show All'),
                           children: List.generate(
                             20,
                             (index) => SizedBox(
@@ -658,7 +659,7 @@ void main() {
           home: Scaffold(
             body: IntrinsicWidth(
               child: UILimitedWrap(
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('Short')),
                   SizedBox(
@@ -689,7 +690,7 @@ void main() {
               stepWidth: double.infinity,
               child: UILimitedWrap(
                 spacing: 0,
-                showAllButton:
+                changeExpansionButton:
                     const SizedBox(width: 0, child: Text('Show All')),
                 children: const [
                   SizedBox(width: 50, height: 30, child: Text('A')),
@@ -719,7 +720,7 @@ void main() {
                 child: UILimitedWrap(
                   spacing: 8,
                   runSpacing: 8,
-                  showAllButton: const Text('Show All'),
+                  changeExpansionButton: const Text('Show All'),
                   children: const [
                     SizedBox(width: 60, height: 30, child: Text('Item 1')),
                     SizedBox(width: 60, height: 30, child: Text('Item 2')),
@@ -751,7 +752,7 @@ void main() {
               child: UILimitedWrap(
                 spacing: 8,
                 runSpacing: 8,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [
                   SizedBox(width: 60, height: 30, child: Text('A')),
                   SizedBox(width: 60, height: 30, child: Text('B')),
@@ -779,7 +780,7 @@ void main() {
               children: [
                 const Text('Baseline'),
                 UILimitedWrap(
-                  showAllButton: const Text('Show All'),
+                  changeExpansionButton: const Text('Show All'),
                   children: const [
                     Text('Item 1'),
                     Text('Item 2'),
@@ -810,7 +811,7 @@ void main() {
               child: UILimitedWrap(
                 spacing: 8,
                 runSpacing: 8,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: const [],
               ),
             ),
@@ -834,7 +835,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: UILimitedWrap(
-              showAllButton: const SizedBox.shrink(),
+              changeExpansionButton: const SizedBox.shrink(),
               children: const [
                 SizedBox.shrink(),
               ],
@@ -859,7 +860,7 @@ void main() {
               child: UILimitedWrap(
                 spacing: 8,
                 runSpacing: 8,
-                showAllButton: const Text('Show All'),
+                changeExpansionButton: const Text('Show All'),
                 children: List.generate(
                   5,
                   (index) => SizedBox(
